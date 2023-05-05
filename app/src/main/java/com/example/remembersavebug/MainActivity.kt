@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -32,18 +34,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             RememberSaveBugTheme {
                 val state = flowOf("test").collectAsState(initial = null)
+
+                val testMovableContent = remember {
+                    movableContentOf {
+                        Greeting(state.value ?: "init")
+                    }
+                }
+
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     when (LocalConfiguration.current.orientation) {
                         Configuration.ORIENTATION_PORTRAIT -> {
                             Column {
                                 Text(text = "column")
-                                Greeting(state.value ?: "init")
+                                testMovableContent()
                             }
                         }
 
                         else -> {
                             Row {
-                                Greeting(state.value ?: "init")
+                                testMovableContent()
                             }
                         }
                     }
